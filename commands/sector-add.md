@@ -1,6 +1,6 @@
 ---
 description: Master orchestrator - add a company to a sector for deep analysis
-allowed-tools: Skill, Task, AskUserQuestion, Read, Write, Bash(python3:*), Bash(mkdir:*), Glob
+allowed-tools: Skill, Task, AskUserQuestion, Read, Write, Bash(python3:*), Bash(mkdir:*), Bash(~/repos/sector-research/sync.sh:*), Glob
 ---
 
 # Sector Add (Master Orchestrator)
@@ -25,7 +25,7 @@ If `$ARGUMENTS` contains a company name, extract it.
 
 Find the active sector:
 ```
-Glob: /Users/agentr/Claude/2026 Master Investment Workflow/Sectors/*/_sector_config.json
+Glob: /Users/agentr/Claude/Code/2026 Master Investment Workflow/Sectors/*/_sector_config.json
 ```
 
 If multiple sectors exist:
@@ -139,6 +139,23 @@ Skill: sector-debate
 
 ```
 Skill: sector-delta
+```
+
+---
+
+## Phase 2.5: Publish to GitHub
+
+After all sub-commands complete, sync the updated sector to the research repo.
+
+Run via Bash:
+```
+~/repos/sector-research/sync.sh push {sector_slug}
+```
+
+If the sync script doesn't exist or the repo isn't cloned, warn but don't block:
+```
+echo "⚠ sector-research repo not found at ~/repos/sector-research/"
+echo "Clone it with: git clone https://github.com/agentr2000-oss/sector-research.git ~/repos/sector-research"
 ```
 
 ---
