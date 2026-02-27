@@ -18,6 +18,7 @@ File: `{Sector}/config.json`
     {
       "name": "Jio Platforms",
       "slug": "Jio_Platforms",
+      "classification": "Operator",
       "added_at": "2026-02-26T11:00:00Z",
       "status": "complete",
       "source_id_block": [1, 100]
@@ -38,6 +39,7 @@ File: `{Sector}/config.json`
 - `source_register_next_id`: Increment by 100 per company added
 - `companies`: Append only — never remove entries
 - `last_updated`: Update on any config change
+- `classification`: Valid values: `"Operator"`, `"Infrastructure"`, `"Enterprise"`, `"Government/PSU"`, `"pending"`. Set to `"pending"` at sector-init time. The comps-seed agent updates it to the correct value during STEP 1.5. If the comps-seed agent cannot determine classification, it remains `"pending"` and the user is prompted during review.
 
 ## Sector Checkpoint Schema
 
@@ -180,6 +182,19 @@ Companies: {count}
 | Metric | Bottom Quartile | Median | Top Quartile |
 |--------|-----------------|--------|--------------|
 [Populated from known data, updated as companies are added]
+
+## Financial Time Series
+[3-5 year revenue, EBITDA, capex, net debt for top operators — table format]
+
+## Sector-Specific Asset Table
+[Sector-dependent: spectrum MHz for telecom, reserves for energy, AUM for banking.
+ If not applicable to sector type, note "N/A for this sector" and omit.]
+
+## Revenue Segmentation
+[Industry-level revenue by service/product type, with per-operator split if available]
+
+## Sector Model Inputs
+[Explicit DCF assumption defaults: revenue growth, margins, capex intensity, WACC range]
 ```
 
 ### S3 — Sector Debates

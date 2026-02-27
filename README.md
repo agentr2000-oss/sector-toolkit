@@ -12,15 +12,26 @@ cp agents/*.md .claude/agents/
 cp skills/*.md .claude/skills/
 ```
 
+Or use the included sync script for ongoing development:
+
+```bash
+./sync.sh pull   # repo → .claude/
+./sync.sh push   # .claude/ → repo
+```
+
 ## Workflow
 
 ```
-sector-init → sector-add → sector-intake → sector-research → sector-analyze → sector-debate → sector-delta
-     │              │             │               │                │               │              │
-     ▼              ▼             ▼               ▼                ▼               ▼              ▼
-  Create         Add          Source         Evidence          Base Reality     Debates        Delta
-  sector       companies     discovery       gathering        + Valuation     + Council       updates
-  (S1, S5)                    (01)            (02)          (03, 05, 06)     (S3, 04, 07)      (S4)
+sector-init ──┬── Phase 4a (parallel): discovery + source-map + comps-seed
+              ├── Phase 4b (sequential): bootstrap (synthesize → S1 + gaps)
+              └── Phase 4c (sequential): deepen (gap-fill + cross-verify → final S1)
+
+sector-add → sector-intake → sector-research → sector-analyze → sector-debate → sector-delta
+     │             │               │                │               │              │
+     ▼             ▼               ▼                ▼               ▼              ▼
+   Add          Source         Evidence          Base Reality     Debates        Delta
+  companies    discovery       gathering        + Valuation     + Council       updates
+                (01)            (02)          (03, 05, 06)     (S3, 04, 07)      (S4)
 ```
 
 ## Commands
@@ -41,7 +52,9 @@ sector-init → sector-add → sector-intake → sector-research → sector-anal
 
 | Agent | Role | Output |
 |-------|------|--------|
+| `sector-discovery` | Multi-round evidence collection with adaptive queries | _working/discovery_notes.md |
 | `sector-bootstrap` | Build sector base reality and source map | S1, S5 |
+| `sector-deepen` | Gap-fill, cross-verification, quality gates | Updated S1, deepen_report.md |
 | `sector-source-map` | Deep source discovery and categorization | S5 |
 | `sector-comps-seed` | Build comparables matrix from sector data | S2 |
 | `company-source-discovery` | Find and catalog company-specific sources | 01 |

@@ -16,9 +16,23 @@ You are discovering sector-level data sources for the **{sector}** sector.
 
 ## Required Skills
 
-Read and follow:
-- `/.claude/skills/research-standards.md` — source register schema, reliability tiers
-- `/.claude/skills/sector-data-model.md` — file schemas
+Read and follow these skills (located in `Code/.claude/skills/` relative to workspace root `/Users/agentr/Claude/`):
+- `sector-data-model.md` — file schemas
+- `research-standards.md` — source register format (T1-T4 tiers)
+- `epistemic-tags.md` — tagging and citation format
+
+---
+
+## RESEARCH PROTOCOL: Search → Read → Extract
+
+For EVERY WebSearch call:
+1. Review the search results
+2. Identify the 2-3 most relevant/authoritative results
+3. Use WebFetch on each to read the FULL page content
+4. Extract specific data points — exact URLs, publication frequency, data availability, content type
+
+**Search snippets are for discovery. WebFetch is for evidence.**
+Never catalog a source you haven't verified exists by reading its actual page.
 
 ---
 
@@ -44,11 +58,13 @@ Use WebSearch to find sector-wide data sources (NOT company-specific). Run these
 9. `"{sector}" sector ETF holdings companies list`
 10. `"{sector}" equity research coverage universe`
 
-For each result, use WebFetch to verify the source exists and extract:
-- Exact URL to data/reports
+For each search, identify the 2-3 most relevant results.
+Use WebFetch on each to read the FULL page content and verify:
+- Exact URL to data/reports (not just the search result URL)
 - Publication frequency (annual, quarterly, monthly)
 - Data availability (free, gated, subscription)
 - Content type (statistics, reports, presentations, databases)
+- What specific data points are available (actual numbers, not just descriptions)
 
 ---
 
@@ -94,6 +110,23 @@ Write to: `{sector_path}/S5_sector_source_map.md`
 ## News & Media
 [same table format]
 
+## Source-to-Model Mapping
+
+Map the most important sources to the financial model line items they feed:
+
+| Source Category | DCF/Model Line Items | Update Cadence | Sensitivity |
+|----------------|---------------------|----------------|-------------|
+
+Populate with actual sources discovered. Focus on the 10-15 most important
+source-to-model connections, not an exhaustive list.
+
+## Data Freshness & Lag
+
+| Source | Typical Publication Lag | Latest Available | Next Expected |
+|--------|------------------------|------------------|---------------|
+
+Populate for the top 5-8 high-frequency sources (regulators, company filings).
+
 ---
 Source map generated: {timestamp}
 Sources cataloged: {count}
@@ -112,6 +145,13 @@ For each source in the map, add a register entry with:
 - Reliability tier per `research-standards.md`
 - Company: `—` (these are sector-wide sources)
 - Added By: `sector-init`
+
+CRITICAL: The Reliability column MUST use ONLY these tier labels:
+- T1 = Audited/regulatory primary (annual reports, regulator data, exchange filings)
+- T2 = Unaudited primary (earnings calls, investor presentations, management commentary)
+- T3 = Reputable secondary (industry reports, quality financial journalism)
+- T4 = Unverified/opinion (blogs, social media, broker notes without data)
+Do NOT use "High", "Medium", "Low", or any other labels.
 
 ---
 

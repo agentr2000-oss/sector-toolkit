@@ -33,6 +33,8 @@ The sector-level source register (`S5_sector_source_register.md`) is an **append
 
 ### Reliability Tiers
 
+**AGENTS: Use ONLY T1/T2/T3/T4 labels. Never substitute High/Medium/Low.**
+
 | Tier | Description | Examples |
 |------|-------------|----------|
 | T1 | Audited/regulatory primary source | Annual reports, 10-K/10-Q, regulator data, audited financials |

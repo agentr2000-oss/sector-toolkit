@@ -30,11 +30,24 @@ Read and follow:
 
 ---
 
+## RESEARCH PROTOCOL: Read Full Pages, Extract Data
+
+For EVERY source you process:
+1. Use WebFetch to access the source URL and read the FULL page content
+2. Do not rely on search snippets or page titles — read the actual content
+3. Extract every quantitative data point relevant to financial analysis
+4. For each data point, create an evidence log entry with the specific value and context from the page
+
+**Search snippets are for discovery. WebFetch is for evidence.**
+Never cite a data point you only saw in a search snippet. Always read the full page.
+
+---
+
 ## STEP 1: Process Priority 1 Sources
 
 For each P1 source in the source index:
 
-1. Use WebFetch to access the source URL
+1. Use WebFetch to access the source URL — read the FULL page
 2. Extract every quantitative data point relevant to financial analysis
 3. For each data point, create an evidence log entry
 

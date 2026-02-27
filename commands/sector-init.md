@@ -5,7 +5,7 @@ allowed-tools: Skill, Task, AskUserQuestion, Read, Write, Bash(python3:*), Bash(
 
 # Sector Init
 
-Initializes a new sector by creating the directory structure, launching 3 bootstrap agents in parallel, and writing S1-S5 sector files.
+Initializes a new sector by creating the directory structure, running a multi-phase research pipeline (discovery → synthesis → deepening), and writing S1-S5 sector files.
 
 **Required Skills:**
 - `/.claude/skills/sector-data-model.md` — config and file schemas
@@ -37,6 +37,7 @@ Set: `sector_path = /Users/agentr/Claude/2026 Master Investment Workflow/Sectors
 mkdir -p "{sector_path}"
 mkdir -p "{sector_path}/companies"
 mkdir -p "{sector_path}/_summaries"
+mkdir -p "{sector_path}/_working"
 ```
 
 ---
@@ -72,9 +73,11 @@ Write `{sector_path}/_sector_checkpoint.json`:
   "created_at": "{ISO_timestamp}",
   "last_updated": "{ISO_timestamp}",
   "phases": {
-    "bootstrap": {"status": "pending", "timestamp": null},
+    "discovery": {"status": "pending", "timestamp": null},
     "source_map": {"status": "pending", "timestamp": null},
     "comps_seed": {"status": "pending", "timestamp": null},
+    "bootstrap": {"status": "pending", "timestamp": null},
+    "deepen": {"status": "pending", "timestamp": null},
     "user_review": {"status": "pending", "timestamp": null}
   }
 }
@@ -104,20 +107,19 @@ If user wants auto-research: Use WebSearch for `"{sector}" top companies market 
 
 ---
 
-## Phase 4: Launch Bootstrap Agents (Parallel)
+## Phase 4a: Launch Discovery + Source Map + Comps Seed (Parallel)
 
-Update checkpoint: `bootstrap`, `source_map`, `comps_seed` → `in_progress`
+Update checkpoint: `discovery`, `source_map`, `comps_seed` → `in_progress`
 
 Launch 3 agents in parallel using the Task tool:
 
-### Agent 1: Sector Bootstrap
+### Agent 1: Sector Discovery (NEW — evidence collection)
 ```
 Task tool:
-  prompt: [Read /.claude/agents/sector-bootstrap.md]
+  prompt: [Read /.claude/agents/sector-discovery.md]
   Variables:
     sector: {display_name}
     sector_path: {sector_path}
-    source_start_id: 1
   subagent_type: general-purpose
   run_in_background: true
 ```
@@ -146,31 +148,80 @@ Task tool:
   run_in_background: true
 ```
 
-**After launching all 3:** Update `_sector_config.json` `source_register_next_id` to 101 (reserving 1-50 for bootstrap, 51-100 for source map).
+**After launching all 3:** Update `_sector_config.json` `source_register_next_id` to 151 (reserving 1-50 for bootstrap, 51-100 for source map, 101-150 for deepen).
 
 Wait for all 3 agents to complete (TaskOutput for each).
 
+Update checkpoint: `discovery`, `source_map`, `comps_seed` → `completed`
+
 ---
 
-## Phase 5: Read Summaries + Update Checkpoint
+## Phase 4b: Launch Bootstrap (Sequential — after 4a)
+
+The bootstrap agent reads the discovery output and synthesizes it into S1.
+
+Update checkpoint: `bootstrap` → `in_progress`
+
+```
+Task tool:
+  prompt: [Read /.claude/agents/sector-bootstrap.md]
+  Variables:
+    sector: {display_name}
+    sector_path: {sector_path}
+    source_start_id: 1
+  subagent_type: general-purpose
+  run_in_background: true
+```
+
+Wait for the bootstrap agent to complete (TaskOutput).
+
+Update checkpoint: `bootstrap` → `completed`
+
+---
+
+## Phase 4c: Launch Deepen (Sequential — after 4b)
+
+The deepen agent reads S1 + gap list, fills gaps, cross-verifies claims, and updates S1.
+
+Update checkpoint: `deepen` → `in_progress`
+
+```
+Task tool:
+  prompt: [Read /.claude/agents/sector-deepen.md]
+  Variables:
+    sector: {display_name}
+    sector_path: {sector_path}
+    source_start_id: 101
+  subagent_type: general-purpose
+  run_in_background: true
+```
+
+Wait for the deepen agent to complete (TaskOutput).
+
+Update checkpoint: `deepen` → `completed`
+
+---
+
+## Phase 5: Read Summaries + Display Results
 
 After all agents complete:
 
 1. Read `{sector_path}/_summaries/S1_summary.txt`
 2. Read `{sector_path}/_summaries/S5_summary.txt`
 3. Read `{sector_path}/_summaries/S2_summary.txt`
-
-Update checkpoint: `bootstrap`, `source_map`, `comps_seed` → `completed`
+4. Read `{sector_path}/_summaries/deepen_summary.txt`
 
 Display to user:
 ```
 ## Sector Initialized: {display_name}
 
 **S1 Base Reality:** {key stats from S1 summary}
+**S1 Deepening:** {quality gates passed, gaps filled from deepen summary}
 **S2 Comps Matrix:** {companies seeded, completeness %}
 **S3 Debates:** {count} sector debates identified
 **S5 Sources:** {count} sector-level sources cataloged
 
+Research pipeline: Discovery → Bootstrap → Deepen (3-agent chain)
 Files created in: {sector_path}/
 ```
 
@@ -215,6 +266,8 @@ If `_sector_checkpoint.json` already exists at the sector path:
 
 1. Read checkpoint
 2. Find first incomplete phase
-3. If `bootstrap`/`source_map`/`comps_seed` incomplete → re-launch those agents
-4. If `user_review` incomplete → jump to Phase 6
-5. If all complete → inform user sector is already initialized
+3. If `discovery`/`source_map`/`comps_seed` incomplete → re-launch Phase 4a agents
+4. If `bootstrap` incomplete → re-launch Phase 4b (requires discovery to be complete)
+5. If `deepen` incomplete → re-launch Phase 4c (requires bootstrap to be complete)
+6. If `user_review` incomplete → jump to Phase 6
+7. If all complete → inform user sector is already initialized
