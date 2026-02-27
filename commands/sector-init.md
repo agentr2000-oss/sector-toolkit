@@ -1,6 +1,6 @@
 ---
 description: Initialize a new sector for the recursive sector analyst
-allowed-tools: Skill, Task, AskUserQuestion, Read, Write, Bash(python3:*), Bash(mkdir:*), Glob
+allowed-tools: Skill, Task, AskUserQuestion, Read, Write, Bash(python3:*), Bash(mkdir:*), Bash(~/repos/sector-research/sync.sh:*), Glob
 ---
 
 # Sector Init
@@ -27,7 +27,7 @@ Normalize the sector name:
 - Display name: as provided (e.g., "India Telecom")
 - Slug: replace spaces with underscores (e.g., "India_Telecom")
 
-Set: `sector_path = /Users/agentr/Claude/2026 Master Investment Workflow/Sectors/{slug}`
+Set: `sector_path = /Users/agentr/Claude/Code/2026 Master Investment Workflow/Sectors/{slug}`
 
 ---
 
@@ -242,6 +242,25 @@ Options:
 **If user wants to review:** Read and display the requested file summary. Let them suggest edits.
 
 **If user approves:** Update checkpoint: `user_review` → `completed`
+
+---
+
+## Phase 6.5: Publish to GitHub
+
+After user approves in Phase 6, sync the sector output to the sector-research repo.
+
+Run via Bash:
+```
+~/repos/sector-research/sync.sh push {slug}
+```
+
+If the sync script doesn't exist or the repo isn't cloned:
+```
+echo "⚠ sector-research repo not found at ~/repos/sector-research/"
+echo "Clone it with: git clone https://github.com/agentr2000-oss/sector-research.git ~/repos/sector-research"
+```
+
+Skip this phase gracefully if the repo isn't set up — don't block sector-init completion.
 
 ---
 
